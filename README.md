@@ -13,6 +13,10 @@ O sistema responde perguntas como:
 
 O fluxo foi modelado com `AssistantAgent` e `RoundRobinGroupChat` do ecossistema `Microsoft AutoGen`, com um `deterministic_fallback` para manter a execução funcional no ambiente local sem dependência obrigatória de credenciais externas.
 
+## Interface
+
+![Interface do agente de educacao financeira](assets/agente_edu.jpg)
+
 ## Arquitetura
 
 ```mermaid
@@ -336,6 +340,10 @@ Possíveis evoluções para uma versão mais robusta:
 ## English Version
 
 `Agente Educacao Financeira` is a `Microsoft AutoGen` MVP for customer-facing financial education. The project models a multi-agent topology in which specialized agents diagnose the financial profile, explain priorities, generate a 30/60/90-day action plan, and enforce a compliance guardrail. The runtime is designed around `AssistantAgent`, `RoundRobinGroupChat`, and `OpenAIChatCompletionClient`, while a deterministic fallback keeps the project runnable without external credentials.
+
+## Interface
+
+![Financial education agent interface](assets/agente_edu.jpg)
 
 ### Technical Highlights
 
