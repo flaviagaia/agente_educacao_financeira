@@ -78,6 +78,25 @@ O runtime planejado usa:
 - `planner_agent`
   - organiza o plano em horizontes de 30, 60 e 90 dias.
 
+### Contrato entre agentes
+
+Mesmo no MVP, a topologia foi pensada como uma cadeia de transformação semântica:
+
+1. o `diagnostic_agent` recebe o contexto bruto do cliente;
+2. transforma esse contexto em leitura de saúde financeira;
+3. o `education_agent` converte a leitura em linguagem acessível;
+4. o `planner_agent` reorganiza a saída em ações operacionais.
+
+Conceitualmente, o payload que circula entre os agentes contém:
+
+- identificador do cliente;
+- pergunta do usuário;
+- perfil financeiro estruturado;
+- indicadores derivados;
+- síntese textual do caso.
+
+Isso permite evoluir o projeto para handoffs mais explícitos ou mensagens estruturadas sem reescrever a camada de domínio.
+
 ### Runtime modes
 
 1. `autogen_groupchat`
@@ -86,6 +105,19 @@ O runtime planejado usa:
    - usado no ambiente local quando não há runtime LLM disponível.
 
 Essa estratégia deixa o projeto portável: a arquitetura de agentes continua explícita, mas o MVP não quebra se o ambiente não tiver SDK ou credenciais.
+
+### Decisões de design
+
+- `RoundRobinGroupChat`
+  - escolhido por ser uma topologia simples, auditável e suficiente para um MVP de colaboração sequencial;
+- `OpenAIChatCompletionClient`
+  - encapsula o backend do modelo quando o runtime LLM está disponível;
+- `deterministic_fallback`
+  - preserva o contrato de saída e facilita demonstração local, testes e versionamento;
+- separação entre `agent orchestration` e `domain tools`
+  - evita acoplamento excessivo entre a lógica financeira e o framework de agentes.
+
+Esse desenho deixa claro onde termina a inteligência de domínio e onde começa a coordenação do runtime conversacional.
 
 ## Ferramentas de Dominio
 
@@ -101,6 +133,21 @@ Calcula:
 - razão de despesas sobre renda;
 - `risk_flags` operacionais.
 
+Formulações usadas no MVP:
+
+- `monthly_surplus = monthly_income - (fixed_expenses + variable_expenses)`
+- `debt_total = credit_card_debt + other_debts`
+- `debt_to_income_ratio = debt_total / monthly_income`
+- `expense_ratio = (fixed_expenses + variable_expenses) / monthly_income`
+
+As `risk_flags` são disparadas por limiares heurísticos como:
+
+- utilização do cartão acima de `75%`
+- pelo menos `2` atrasos recentes
+- reserva de emergência abaixo de `1` mês
+- dívida total acima de `80%` da renda mensal
+- volume elevado de despesas recorrentes fragmentadas
+
 ### `explain_financial_priorities`
 Converte os sinais financeiros em uma narrativa clara para educação financeira.
 
@@ -110,6 +157,13 @@ Gera um plano progressivo em:
 - `30 dias`
 - `60 dias`
 - `90 dias`
+
+O plano é intencionalmente operacional e prioriza:
+
+- corte de vazamentos orçamentários;
+- reorganização do fluxo de pagamentos;
+- redução do custo da dívida;
+- reconstrução de liquidez mínima.
 
 ### `compliance_guardrail`
 Reforça que a saída é educativa e não substitui aconselhamento individual de investimento.
@@ -172,6 +226,40 @@ O método `ask_financial_education_agent()` retorna um dicionário com:
 }
 ```
 
+### Semântica do retorno
+
+- `runtime_mode`
+  - identifica se a resposta veio do fluxo `AutoGen` ou do fallback local;
+- `profile`
+  - snapshot do dado canônico consultado;
+- `diagnostics`
+  - camada analítica com indicadores numéricos e flags;
+- `explanation`
+  - narrativa pedagógica sobre prioridades;
+- `action_plan`
+  - plano prescritivo de curto e médio prazo;
+- `guardrail`
+  - camada explícita de compliance;
+- `customer_message`
+  - resposta consolidada para consumo final;
+- `internal_summary`
+  - resumo reduzido para logging, monitoramento ou integração futura.
+
+Esse contrato facilita integração posterior com APIs, observabilidade e avaliação automática.
+
+## Persistência e Artefatos
+
+O script [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/main.py) gera:
+
+- [financial_education_report.json](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/data/processed/financial_education_report.json)
+
+Esse artefato funciona como:
+
+- evidência de execução;
+- snapshot da resposta final;
+- base para auditoria local;
+- ponto de integração com sistemas externos em uma próxima fase.
+
 ## Interface Streamlit
 
 O app funciona como um `inspection console` para a equipe técnica:
@@ -182,6 +270,29 @@ O app funciona como um `inspection console` para a equipe técnica:
 - visualização do diagnóstico;
 - leitura do plano de ação;
 - inspeção do perfil estruturado.
+
+Do ponto de vista técnico, a interface não é apenas uma camada visual. Ela atua como:
+
+- validador manual do contrato de saída;
+- console de inspeção do runtime;
+- surface de demonstração da arquitetura multiagente;
+- ponto de comparação entre comportamento esperado e artefatos retornados.
+
+## Validação
+
+Os testes em [tests/test_agent.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/tests/test_agent.py) verificam:
+
+- presença de chaves estruturais no diagnóstico;
+- geração dos três horizontes do plano de ação;
+- retorno de mensagem consolidada pelo agente.
+
+Além dos testes automatizados, o projeto foi validado com:
+
+```bash
+python3 main.py
+python3 -m unittest discover -s tests -v
+python3 -m py_compile app.py src/agent.py src/tools.py src/sample_data.py main.py
+```
 
 ## Execucao Local
 
@@ -210,6 +321,18 @@ streamlit run app.py
 - o fluxo `AutoGen` depende de SDK instalado e chave de API;
 - o fallback é propositalmente determinístico para auditoria e portabilidade.
 
+## Roadmap Tecnico
+
+Possíveis evoluções para uma versão mais robusta:
+
+- introduzir `handoffs` explícitos entre agentes;
+- usar mensagens estruturadas em vez de apenas texto livre entre etapas;
+- adicionar memória de contexto por cliente;
+- integrar scoring de risco financeiro com features históricas;
+- persistir execuções em banco de dados;
+- incluir avaliação de qualidade da resposta multiagente;
+- adicionar observabilidade do runtime agentic.
+
 ## English Version
 
 `Agente Educacao Financeira` is a `Microsoft AutoGen` MVP for customer-facing financial education. The project models a multi-agent topology in which specialized agents diagnose the financial profile, explain priorities, generate a 30/60/90-day action plan, and enforce a compliance guardrail. The runtime is designed around `AssistantAgent`, `RoundRobinGroupChat`, and `OpenAIChatCompletionClient`, while a deterministic fallback keeps the project runnable without external credentials.
@@ -222,3 +345,5 @@ streamlit run app.py
 - structured financial profiles as the grounding layer
 - Streamlit interface for runtime inspection
 - JSON report persistence in `data/processed/financial_education_report.json`
+- heuristics for surplus, debt-to-income, expense ratio, and risk flags
+- explicit separation between orchestration, domain logic, and presentation layers
