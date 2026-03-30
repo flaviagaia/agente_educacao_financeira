@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-
 import streamlit as st
 
 from src.agent import ask_financial_education_agent

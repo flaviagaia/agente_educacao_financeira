@@ -249,9 +249,9 @@ Esse contrato facilita integração posterior com APIs, observabilidade e avalia
 
 ## Persistência e Artefatos
 
-O script [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/main.py) gera:
+O script [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/main.py) gera o artefato:
 
-- [financial_education_report.json](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/data/processed/financial_education_report.json)
+- `data/processed/financial_education_report.json`
 
 Esse artefato funciona como:
 
@@ -344,6 +344,6 @@ Possíveis evoluções para uma versão mais robusta:
 - deterministic fallback for local reproducibility
 - structured financial profiles as the grounding layer
 - Streamlit interface for runtime inspection
-- JSON report persistence in `data/processed/financial_education_report.json`
+- JSON report persistence in the generated runtime artifact `data/processed/financial_education_report.json`
 - heuristics for surplus, debt-to-income, expense ratio, and risk flags
 - explicit separation between orchestration, domain logic, and presentation layers
