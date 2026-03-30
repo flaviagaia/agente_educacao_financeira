@@ -1,0 +1,4 @@
+customer_id,name,monthly_income,fixed_expenses,variable_expenses,credit_card_debt,other_debts,emergency_reserve_months,savings_rate_pct,credit_card_utilization_pct,missed_payments_6m,recurring_subscriptions,financial_goal,risk_tolerance
+FIN-1001,Ana Paula Costa,6800,3900,1800,4200,2500,0.7,3.2,81,2,8,Montar reserva de emergência de 6 meses,baixa
+FIN-1002,Bruno Henrique Lima,9200,4100,2100,1800,0,2.8,11.5,39,0,5,Guardar entrada para imóvel em 24 meses,moderada
+FIN-1003,Carla Mendes Rocha,5400,3000,1650,3100,4800,0.2,1.1,92,3,11,Sair do rotativo e organizar orçamento,baixa
