@@ -49,17 +49,17 @@ Essa separação deixa o MVP auditável e reduz o risco de respostas soltas sem 
 
 ## Estrutura do Projeto
 
-- [src/sample_data.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/src/sample_data.py)
+- [src/sample_data.py](src/sample_data.py)
   - dataset demo e inicialização da base.
-- [src/tools.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/src/tools.py)
+- [src/tools.py](src/tools.py)
   - ferramentas de domínio para diagnóstico, explicação e plano de ação.
-- [src/agent.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/src/agent.py)
+- [src/agent.py](src/agent.py)
   - orquestração `AutoGen` e fallback.
-- [app.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/app.py)
+- [app.py](app.py)
   - console técnico em `Streamlit`.
-- [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/main.py)
+- [main.py](main.py)
   - execução rápida e persistência do relatório.
-- [tests/test_agent.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/tests/test_agent.py)
+- [tests/test_agent.py](tests/test_agent.py)
   - validação mínima do pipeline.
 
 ## Como o AutoGen foi modelado
@@ -253,7 +253,7 @@ Esse contrato facilita integração posterior com APIs, observabilidade e avalia
 
 ## Persistência e Artefatos
 
-O script [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/main.py) gera o artefato:
+O script [main.py](main.py) gera o artefato:
 
 - `data/processed/financial_education_report.json`
 
@@ -284,7 +284,7 @@ Do ponto de vista técnico, a interface não é apenas uma camada visual. Ela at
 
 ## Validação
 
-Os testes em [tests/test_agent.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/agente_educacao_financeira/tests/test_agent.py) verificam:
+Os testes em [tests/test_agent.py](tests/test_agent.py) verificam:
 
 - presença de chaves estruturais no diagnóstico;
 - geração dos três horizontes do plano de ação;
